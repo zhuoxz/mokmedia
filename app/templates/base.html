@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0 viewport-fit=cover">
+  <meta name="description" content="">
+  <meta name="author" content="cockle">
+  <meta name="generator" content="mokmedia 0.0.1">
+  <meta name="theme-color" content="#353B40">
+
+  <title>{% block title %}{% endblock %}</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='src/img/favicon.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='src/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='src/css/bootstrap-icons.min.css') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='src/css/base.css') }}">
+
+  {% block extra_head %}
+  {% endblock %}
+</head>
+
+<body>
+  <div id="top"></div>
+  {% block nav %}
+  <header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top custom-nav-color">
+      <div class="container-fluid">
+        <div class="dropdown">
+          <a class="navbar-brand dropdown-toggle pe-auto d-flex align-items-center no-long-press" href="#" role="button"
+             id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img class="rounded-circle user-avatar no-long-press" src="{{ url_for('static', filename='src/img/logo_nav.png') }}" alt="用户头像">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item logout-item no-long-press" href="#"><i class="bi bi-box-arrow-right me-2"></i>退出</a></li>
+          </ul>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="bi bi-house-door"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item mx-3">
+              {% if active_page == 'media' %}
+              <a class="nav-link active" aria-current="page" data-frt-focus="here" aria-label="媒体库" autofocus>媒体库</a>
+              {% else %}
+              <a class="nav-link" href="{{ url_for('media.movie_home') }}" data-frt-focus="here" aria-label="媒体库">媒体库</a>
+              {% endif %}
+            </li>
+            <li class="nav-item mx-3">
+              {% if active_page == 'download' %}
+              <a class="nav-link active" aria-current="page" aria-label="下载">下载</a>
+              {% else %}
+              <a class="nav-link" href="{{ url_for('download') }}" aria-label="下载">下载</a>
+              {% endif %}
+            </li>
+          </ul>
+          {% if active_page == 'media' %}
+          <form class="d-flex align-items-center" role="search">
+            <input id="bucket-list-input" class="form-control me-2" type="search" placeholder="想看点儿啥？"
+              aria-label="Search">
+            <button id="bucket-list-btn" class="btn btn-outline-primary" type="submit">Go</button>
+          </form>
+          {% endif %}
+          {% if active_page == 'download' %}
+          <form class="d-flex align-items-center" role="search">
+            <input id="search-input" class="form-control me-2" type="search" placeholder="搜索" aria-label="Search">
+            <button id="search-btn" class="btn btn-outline-primary" type="submit">Go</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
+  {% endblock nav %}
+
+  <main>
+    {% block viModal %}
+    <div id="validateModal" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-labelledby="登录页">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">验证页</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭验证页"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row text-center">
+                <span>使用Cookies告知。保持下次登录？</span>
+              </div>
+              <div class="row mt-1 justify-content-center">
+                <div class="col-auto">
+                  <div class="form-check form-switch">
+                    <input id="rmSwitch" class="form-check-input" type="checkbox" value="" aria-label="保持登录" checked>
+                  </div>
+                </div>
+              </div>
+              <hr>
+
+              <div id="captchaBox" class="d-none">
+                <div class="row text-center">
+                  <div class="col-8">
+                    <div class="input-group mb-3">
+                      <input id="captchaInput" type="text" class="form-control me-2" placeholder="验证码"
+                        aria-label="验证码输入" aria-describedby="captchaBtn captchaMsg">
+                      <button id="captchaBtn" type="button" class="btn btn-outline-primary rounded me-2" aria-label="刷新验证码"><i class="bi bi-repeat"></i></button>
+                      <div id="captchaTip" class="invalid-feedback">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <img id="captchaImage" src="data:image/gif;base64,R0lGODlhgAAgAIAAAP///wAAACH5BAEAAAAALAAAAACAAAAAAQAOhAAAOw==" width="90" alt=""/>
+                  </div>
+                </div>
+              </div>
+              <!--          <hr>   -->
+              <div class="row">
+                <div class="col-8 justify-content-center">
+                  <label for="passwdInput" class="form-label">密码</label>
+                  <input id="passwdInput" type="text" class="form-control" aria-describedby="passwdTip" required>
+                  <div id="passwdTip" class="invalid-feedback">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div id="validateSpinner" class="ball-pulse d-none">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            <button id="loginBtn" type="button" class="btn btn-primary">提交</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endblock viModal %}
+    {% block content %}
+    {% endblock content %}
+    <div id="back-to-top" class="d-none no-long-press"><a>-Top-</a></div>
+  </main>
+
+  {% block footer %}
+  <footer class="footer mt-4 mb-2" oncontextmenu="return false;">
+    <div class="text-center cus-footer-text">
+      <span>No Copyright &copy; <span class="text-decoration-line-through">2024</span> 2025
+        -.- | MokMedia </span>
+    </div>
+  </footer>
+  {% endblock footer %}
+
+  {% block js %}
+  <script src="{{ url_for('static', filename='src/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='src/js/md5.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='src/js/axios.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='src/js/base.js') }}"></script>
+  {% endblock js %}
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+gitignore
+# Python
+__pycache__/
+.idea/
+env/
+
+# OS
+.DS_Store
+Thumbs.db

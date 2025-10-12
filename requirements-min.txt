@@ -1,0 +1,8 @@
+Flask~=3.1.2
+Flask-Caching~=2.3.1
+Flask-Limiter~=4.0.0
+Flask-SQLAlchemy~=3.1.1
+Flask-JWT-Extended~=4.7.1
+captcha~=0.7.1
+user-agents~=2.2.0
+redis~=6.2.0

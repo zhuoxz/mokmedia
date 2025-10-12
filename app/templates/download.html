@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}资源下载{% endblock %}
+{% set active_page = 'download' %}
+
+{% block content %}
+
+<div class="container">
+    <div id="tip-toast" class="toast align-items-center mb-4 z-index-13z-index position-relative top-0 start-50 translate-middle-x" role="alert"
+        aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <div id="tip-loading" class="load_13">
+                    <div class="dot1"></div>
+                    <div class="dot2"></div>
+                </div>
+                <span id="tip-content" class="mx-4"></span>
+            </div>
+            <button id="close-tip" type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭提示消息"></button>
+        </div>
+    </div>
+
+    <div class="row mb-2 mt-2">
+        <h3 class="text-center">
+            <i class="bi bi-cloud-download align-middle" style="color: #ffffff"></i>
+        </h3>
+    </div>
+
+    <div class="row mb-2 mt-2 overflow-x-auto">
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSeven">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false"
+                        aria-controls="collapseSeven">
+                        下载测试视频 | Download Test Video
+                    </button>
+                </h2>
+                <div id="collapseSeven" class="accordion-collapse collapse show" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="shadow-sm p-2 mb-2 bg-body-tertiary rounded d-flex  justify-content-between fs-6">
+                            <span class="fs-6 text-break align-self-center">test-video-720p | 859 KB .mp4</span>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="downFile(this,name='test720p.mp4')" aria-label="下载按钮">
+                                <i class="bi bi-arrow-down-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script>
+const searchBtn = document.getElementById('search-btn');
+searchBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('search-input').placeholder = '才几个你就搜';
+});
+
+tips = new ToastManager('tip-toast', 'tip-loading', 'tip-content');
+
+async function downFile(btn, fileStr) {
+    if (!fileStr) { return; }
+    // todo...
+    // btn.disabled = true;
+    // try {
+    //     const res = await axios.get(`/api/download/${encodeURIComponent(fileStr)}`, {
+    //         responseType: 'blob'
+    //     });
+
+    //     if (res.status === 200) {
+    //         const link = document.createElement('a');
+    //         link.style.display = 'none';
+    //         const blob = new Blob([res.data], { type: 'application/octet-stream' });
+    //         const url = URL.createObjectURL(blob);
+    //         link.href = url;
+    //         link.setAttribute('download', fileStr);
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         document.body.removeChild(link);
+    //         URL.revokeObjectURL(url);
+    //     } else {
+    //         tips.show('文件下载失败', false, false);
+    //     }
+    // } catch (error) {
+    //     if (error.response) {
+    //         const text = await error.response.data.text();
+    //         let msg = '下载失败';
+    //         try {
+    //             const err = JSON.parse(text);
+    //             msg = err.msg || msg;
+    //         } catch (e) {
+    //             msg = text;
+    //         }
+    //         tips.show(msg, false, true, 3000);
+    //     } else if (error.request) {
+    //         tips.show('网络错误：无法连接到服务器', false, true, 3000);
+    //     } else {
+    //         tips.show('请求错误', false, true, 3000);
+    //     }
+    // } finally {
+    //     btn.disabled = false;
+    // }
+    const a = document.createElement('a');
+    //a.href = `/static/download/${encodeURIComponent(fileStr)}`;
+    a.href = `/static/media/video/${encodeURIComponent(fileStr)}`;
+    a.download = fileStr;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+</script>
+{% endblock js %}

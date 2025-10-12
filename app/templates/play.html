@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}电影/剧集{% endblock %}
+{% set active_page = 'play' %}
+{#
+{% set login = data and 'src' in data %}
+#}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/plyr.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/swiper-bundle.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/play.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row">
+        <div id="player-content" class="col no-long-press">
+            <video id="player">
+            </video>
+            <div id="target"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="tip-toast" class="toast align-items-center mb-4 z-index-13z-index position-relative top-0 start-50 translate-middle-x" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <div id="tip-loading" class="load_13">
+                        <div class="dot1"></div>
+                        <div class="dot2"></div>
+                    </div>
+                    <span id="tip-content" class="mx-1"></span>
+                </div>
+                <button id="close-tip" type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭提示消息"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="extra_para" data-typ="{{ typ or '' }}" data-mid="{{ mid or '' }}" data-season="{{data.seasons or ''}}"></div>
+        <div class="col  no-long-press">
+            <div class="d-flex align-items-center ">
+                <h5 class="text-light text-wrap mb-0 me-4">{{ data.title or '' }}</h5>
+                <div id="play-loading" class="load_13 d-none">
+                    <div class="dot1"></div>
+                    <div class="dot2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col mt-4">
+            <span class="text-nowrap">
+                <i class="bi bi-play-btn-fill me-2"></i>播放源
+            </span>
+            <div id="provider-loading" class="load_13 ms-3 d-none">
+                <div class="dot1"></div>
+                <div class="dot2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col" id="srcBtnGroup">
+        </div>
+    </div>
+
+    <div class="row no-long-press mb-4">
+        <div class="col mt-4">
+            <button class="episode-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapseEpisode" type="button" aria-expanded="false"
+                aria-controls="剧集折叠项">
+                <i class="bi bi-chevron-right"></i> 剧集列表
+            </button>
+
+            <div id="list-loading" class="load_13 ms-3 d-none">
+                <div class="dot1"></div>
+                <div class="dot2"></div>
+            </div>
+        </div>
+
+        <div class="collapse" id="collapseEpisode">
+            <div class="card custom-card">
+                <div class="swiper" id="epSwiper">
+                    <!-- Additional required wrapper -->
+                    <div class="swiper-wrapper" id="epSwiperWrapper">
+                        <!-- Slides -->
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detail-area">
+        <div class="row">
+            <div class="col">
+                <span><i class="bi bi-info-circle me-2"></i>影片信息</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="custom-info-card">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="info-item">
+                                <span class="info-label">片名：</span>
+                                <span class="info-value">{{ data.name or '' }}</span>
+                            </div>
+                            {% if data.a_name %}
+                            <div class="info-item">
+                                <span class="info-label">别名：</span>
+                                <span class="info-value">{{ data.a_name }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="info-item">
+                                <span class="info-label">导演：</span>
+                                <span class="info-value">{{ data.directors or '' }} </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">主演：</span>
+                                <span class="info-value">{{ data.actors or '' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="info-item">
+                                <span class="info-label">上映：</span>
+                                <span class="info-value">{{ data.release_date or '' }}</span>
+                            </div>
+                            {% if data.duration %}
+                            <div class="info-item">
+                                <span class="info-label">时长：</span>
+                                <span class="info-value">{{ data.duration }} 分钟</span>
+                            </div>
+                            {% endif %}
+                            <div class="info-item">
+                                <span class="info-label">地区：</span>
+                                <span class="info-value">{{ data.country or '' }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">语言：</span>
+                                <span class="info-value">{{ data.language or '' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            {% if data.season %}
+                            <div class="info-item">
+                                <span class="info-label">季数： </span>
+                                <span class="info-value">第 {{ data.season }} 季</span>
+                            </div>
+                            {% endif %}
+
+                            <div class="info-item">
+                                <span class="info-label">评分：</span>
+                                <span class="info-value text-warning">{{ data.rating or '' }}
+                                    {% if data.star %}
+                                    {% for i in range(data.star) %}
+                                    <i class="bi bi-star-fill"></i>
+                                    {% endfor %}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">分类：</span>
+                                <span class="info-value">
+                                    {% for i in data.genres %}
+                                    <span class="badge rounded-pill text-bg-light">{{ i }}</span>
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col mt-4">
+                <span><i class="bi bi-chat-text me-2"></i>剧情介绍</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mt-3 mb-4">
+                <p class="allow-copy storyline">{{ data.storyline | default('', true) }}</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+{#
+{% if login %}
+<script> MokMedia.srcData = {{ data.get('src', {}) | tojson }}; </script>
+{% else %}
+<script> MokMedia.srcData = null; </script>
+{% endif %}
+#}
+<script src="{{ url_for('static', filename='src/js/hls.min.js') }}"></script>
+<script src="{{ url_for('static', filename='src/js/plyr.polyfilled.min.js') }}"></script>
+<script src="{{ url_for('static', filename='src/js/swiper-bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='src/js/play.js') }}"></script>
+{% endblock js %}

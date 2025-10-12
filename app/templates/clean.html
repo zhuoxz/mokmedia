@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}...{% endblock %}
+{% set active_page = 'clean' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-2 mt-2 ">
+        <h5 class="text-center m-1">
+            <span class="align-middle" style="color:#ffffff">清理缓存</span>
+        </h5>
+    </div>
+
+    <div class="row mb-3 mt-3">
+        <div class="col-10 col-lg-6 col-md-6 col-sm-8">
+            <span id='redis-status' class="text-break" style="color:#ffffff">Redis-status:  </span>
+        </div>
+    </div>
+
+
+    <form aria-label="缓存清理表单区域">
+        <input type="text" name="username" value="admin" autocomplete="username" style="position: absolute; left: -9999px; width: 1px; height: 1px;">
+        <div class="row mb-3 mt-4">
+            <div class="col-10 col-lg-6 col-md-6 col-sm-8">
+                <label for="passwd" class="form-label" style="color:#ffffff">Password</label>
+                <input type="password" class="form-control" id="passwd" autocomplete="new-password">
+            </div>
+        </div>
+
+        <button id="submitBtn" type="button" class="btn btn-primary">Submit</button>
+    </form>
+
+    <div class="row mb-3 mt-3">
+        <div class="col-10 col-lg-6 col-md-6 col-sm-8">
+            <div class="alert alert-info" id="alertColor" role="alert">
+                <span id="notebox" class="text-break">结果:</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const submitBtn = document.getElementById('submitBtn');
+    const passwdInput = document.getElementById('passwd');
+    const notebox = document.getElementById('notebox');
+    const redis = document.getElementById('redis-status');
+
+    submitBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const password = passwdInput.value.trim();
+        notebox.textContent = '';
+        if (!password) {
+            notebox.textContent = '请输入密码。';
+            return;
+        }
+        submitBtn.disabled = true;
+
+        fetch('/api/clean-cache', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({ password: md5(password) })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('请求失败，请检查密码或网络。');
+            }
+            return response.json();
+        })
+        .then(data => {
+            notebox.textContent = '缓存清理成功！';
+            // passwdInput.value = '';
+            if (data.redis === true) {
+                redis.textContent = 'Redis-status: 正在工作';
+            } else {
+                redis.textContent = 'Redis-status: 已停止工作';
+            }
+        })
+        .catch(error => {
+            notebox.textContent = '操作失败: ' + error.message;
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+        });
+    });
+});
+</script>
+{% endblock %}
