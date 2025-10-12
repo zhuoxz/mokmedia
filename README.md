@@ -41,7 +41,7 @@ A simple online media streaming platform based on Flask, supporting authenticati
 1. **克隆或者下载项目 | Clone the repo**  
 
     ```bash
-    git clone https://github.com/cockle/mokmedia
+    git clone https://github.com/zhuoxz/mokmedia
     cd mokmedia
     ```
 
