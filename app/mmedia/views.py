@@ -21,7 +21,7 @@ VIDEO_EXPIRES = 18060  # 5小时，允许1分钟延迟 | 5 hours，allow 1min de
 @cache.cached(timeout=518400, query_string=True)
 def movie_home():
     nav_for = request.args.get('tp', type=str, default='hot')
-    page = request.args.get('page', type=int)
+    page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', type=int)
     device_type = DeviceType.get_type(request)
 
@@ -33,7 +33,7 @@ def movie_home():
 
 @media_blue.route('/media/<string:mid>', methods=['GET'])
 @limiter.exempt
-@cache.cached(timeout=518400, query_string=True)
+# @cache.cached(timeout=518400, query_string=True)
 def detail_page(mid: str):
 
     typ = request.args.get('typ', type=str)
